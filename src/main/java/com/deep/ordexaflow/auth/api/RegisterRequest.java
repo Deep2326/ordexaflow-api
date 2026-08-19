@@ -13,4 +13,10 @@ public record RegisterRequest(
         @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$",
                 message = "must include uppercase, lowercase, number, and special character")
         String password) {
+
+    @Override
+    public String toString() {
+        return "RegisterRequest[firstName=%s, lastName=%s, email=%s, password=[REDACTED]]"
+                .formatted(firstName, lastName, email);
+    }
 }
