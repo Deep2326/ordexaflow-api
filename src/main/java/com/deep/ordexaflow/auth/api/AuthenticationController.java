@@ -1,5 +1,6 @@
 package com.deep.ordexaflow.auth.api;
 
+import com.deep.ordexaflow.auth.application.LoginService;
 import com.deep.ordexaflow.auth.application.RegistrationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -13,14 +14,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
     private final RegistrationService registrationService;
+    private final LoginService loginService;
 
-    public AuthenticationController(RegistrationService registrationService) {
+    public AuthenticationController(RegistrationService registrationService, LoginService loginService) {
         this.registrationService = registrationService;
+        this.loginService = loginService;
     }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public UserRegistrationResponse register(@Valid @RequestBody RegisterRequest request) {
         return registrationService.register(request);
+    }
+
+    @PostMapping("/login")
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
+        return loginService.login(request);
     }
 }

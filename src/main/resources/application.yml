@@ -33,3 +33,10 @@ management:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+ordexaflow:
+  security:
+    jwt:
+      issuer: ${JWT_ISSUER:http://localhost:8080}
+      access-token-ttl: 15m
+      secret: ${JWT_SECRET:local-development-only-change-this-32-byte-secret}

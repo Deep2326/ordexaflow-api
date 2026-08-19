@@ -2,7 +2,7 @@
 
 OrdexaFlow is a production-oriented commerce and order-management backend built as a modular Spring Boot monolith. It is designed to demonstrate secure API design, transactional order processing, safe inventory updates, relational database design, automated testing, and production delivery practices.
 
-> Status: Phase 1 — foundation.
+> Status: Phase 2 — identity and authentication in progress. Registration and JWT login are implemented.
 
 ## Problem
 
@@ -66,7 +66,13 @@ Then open:
 - Actuator: `http://localhost:8080/actuator/health`
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 
-Local database defaults are intended only for development and can be overridden with `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD`.
+Local database defaults are intended only for development and can be overridden with `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD`. JWT configuration can be overridden with `JWT_SECRET` (at least 32 bytes) and `JWT_ISSUER`; the committed secret fallback is for local development only.
+
+Implemented authentication endpoints:
+
+- `POST /api/v1/auth/register` creates a customer with `ROLE_USER`.
+- `POST /api/v1/auth/login` returns a signed Bearer access token valid for 15 minutes.
+- All endpoints not explicitly public require `Authorization: Bearer <access-token>`.
 
 ## Design documents
 
