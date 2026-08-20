@@ -2,8 +2,8 @@
 
 OrdexaFlow is a production-oriented commerce and order-management backend built as a modular Spring Boot monolith. It is designed to demonstrate secure API design, transactional order processing, safe inventory updates, relational database design, automated testing, and production delivery practices.
 
-> Status: Phases 2–3 — registration, JWT login, rotating refresh tokens, logout/revocation,
-> current-user profiles, and initial RBAC are implemented.
+> Status: Phases 2–4 — identity/security and the first production catalog slice are implemented,
+> including categories, products, inventory, filtering, pagination, and admin RBAC.
 
 ## Problem
 
@@ -81,6 +81,14 @@ Implemented authentication endpoints:
 
 Refresh tokens are valid for 30 days by default. Only SHA-256 token hashes are stored in PostgreSQL.
 Reusing a token that has already been rotated revokes the remaining token family, limiting replay after theft.
+
+Implemented catalog endpoints:
+
+- `GET /api/v1/categories` lists active categories.
+- `GET /api/v1/products` supports bounded pagination, repeatable sorting, category and price filters, and text search.
+- `GET /api/v1/products/{productId}` returns an active product with its current inventory.
+- `/api/v1/admin/categories/**` and `/api/v1/admin/products/**` provide role-protected management operations.
+- Product deletion is a soft discontinuation, and inventory uses optimistic locking to prevent lost updates.
 
 ## Design documents
 

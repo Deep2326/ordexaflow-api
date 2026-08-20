@@ -142,3 +142,4 @@ Order creation, inventory reduction, and cart clearing share one `@Transactional
 | Optimistic inventory locking | Efficient for normal contention and prevents lost updates |
 | Price snapshots in order items | Historical orders remain correct after catalog changes |
 | Soft product discontinuation | Preserves referential and historical integrity |
+| Optimistic inventory version | Detects concurrent stock updates without serializing normal catalog reads |

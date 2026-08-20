@@ -29,6 +29,8 @@
 | GET | `/categories` | Public | Active categories |
 
 `GET /products` supports `page`, `size`, `sort`, `category`, `minPrice`, `maxPrice`, and `q`.
+Page size is limited to 100. Supported sort fields are `sku`, `name`, `price`, and `createdAt`;
+repeat `sort=field,direction` to apply multiple sort orders.
 
 ## Cart
 
@@ -62,7 +64,7 @@
 | POST | `/admin/products` | Admin | Create product and initial inventory |
 | PUT | `/admin/products/{productId}` | Admin | Update product |
 | DELETE | `/admin/products/{productId}` | Admin | Discontinue product |
-| PUT | `/admin/products/{productId}/inventory` | Admin | Set/adjust available stock with reason |
+| PUT | `/admin/products/{productId}/inventory` | Admin | Set absolute available stock quantity |
 | GET | `/admin/orders` | Admin | Filtered, paginated order queue |
 | GET | `/admin/orders/{orderId}` | Admin | Read any order |
 | PATCH | `/admin/orders/{orderId}/status` | Admin | Apply a valid status transition |
@@ -139,7 +141,22 @@ Product response:
   "price": 1299.00,
   "currency": "USD",
   "availableQuantity": 8,
+  "active": true,
   "category": { "id": "ca9d7780-d51f-4fc1-8b95-a7eec7c506ba", "name": "Laptops", "slug": "laptops" }
+}
+```
+
+Admin product creation request:
+
+```json
+{
+  "sku": "LAPTOP-001",
+  "name": "Developer Laptop",
+  "description": "A portable workstation",
+  "price": 1299.00,
+  "currency": "USD",
+  "categoryId": "ca9d7780-d51f-4fc1-8b95-a7eec7c506ba",
+  "initialQuantity": 8
 }
 ```
 
