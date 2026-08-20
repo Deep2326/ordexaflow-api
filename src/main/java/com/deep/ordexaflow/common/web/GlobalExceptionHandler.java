@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.deep.ordexaflow.common.exception.DuplicateEmailException;
 import com.deep.ordexaflow.common.exception.ResourceNotFoundException;
+import com.deep.ordexaflow.auth.application.InvalidRefreshTokenException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     ResponseEntity<ApiError> authentication(AuthenticationException exception, HttpServletRequest request) {
         return response(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "Invalid email or password",
+                request, List.of());
+    }
+
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    ResponseEntity<ApiError> invalidRefreshToken(
+            InvalidRefreshTokenException exception, HttpServletRequest request) {
+        return response(HttpStatus.UNAUTHORIZED, "INVALID_REFRESH_TOKEN", exception.getMessage(),
                 request, List.of());
     }
 

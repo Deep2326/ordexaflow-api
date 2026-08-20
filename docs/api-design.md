@@ -15,9 +15,9 @@
 | Method | Path | Access | Purpose |
 |---|---|---|---|
 | POST | `/auth/register` | Public | Register a customer |
-| POST | `/auth/login` | Public | Issue an access token |
-| POST | `/auth/refresh` | Public with refresh token | Planned: rotate refresh token and issue access token |
-| POST | `/auth/logout` | Authenticated | Planned: revoke the presented refresh token |
+| POST | `/auth/login` | Public | Issue an access/refresh token pair |
+| POST | `/auth/refresh` | Public with refresh token | Rotate refresh token and issue a new token pair |
+| POST | `/auth/logout` | Public with refresh token | Revoke the presented refresh token; idempotent |
 | GET | `/users/me` | Customer/Admin | Current user profile |
 
 ## Public catalog
@@ -81,6 +81,39 @@ Register request:
   "password": "correct-horse-battery-staple"
 }
 ```
+
+Login request:
+
+```json
+{
+  "email": "avery@example.com",
+  "password": "correct-horse-battery-staple"
+}
+```
+
+Login and refresh response:
+
+```json
+{
+  "accessToken": "eyJ...",
+  "refreshToken": "f1qgZ5...",
+  "tokenType": "Bearer",
+  "expiresIn": 900,
+  "refreshExpiresIn": 2592000
+}
+```
+
+Refresh and logout request:
+
+```json
+{
+  "refreshToken": "f1qgZ5..."
+}
+```
+
+Every successful refresh invalidates the presented refresh token and returns a replacement. An invalid,
+expired, revoked, or reused token returns `401 INVALID_REFRESH_TOKEN`. Logout is idempotent and returns
+`204 No Content`, including when the token no longer exists.
 
 Current-user response:
 

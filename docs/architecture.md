@@ -66,13 +66,38 @@ Controllers remain thin. Application services enforce business rules and own tra
 ## Security architecture
 
 - Stateless access JWTs are short-lived and signed using a secret/key supplied outside source control.
-- Planned refresh tokens are opaque random values; only a cryptographic hash will be stored in the database.
-- Planned refresh tokens will be rotated on use and revoked on logout.
+- Refresh tokens are 256-bit opaque random values; only SHA-256 hashes are stored in the database.
+- Refresh tokens are single-use and rotate inside a database transaction guarded by a pessimistic row lock.
+- A token family identifies one login session. Reuse of an already-rotated token revokes the family's
+  remaining active tokens; logout revokes the supplied token.
 - The JWT filter authenticates access tokens before controller invocation.
 - URL rules provide coarse access control; `@PreAuthorize` protects sensitive application methods.
 - `/api/v1/auth/**`, public `GET /api/v1/products/**`, OpenAPI in non-production profiles, and liveness/readiness are permitted as explicitly configured.
 - All other endpoints require authentication; `/api/v1/admin/**` requires the admin role.
 - Ownership checks occur in service queries (for example, lookup by both order ID and authenticated user ID).
+
+### Refresh-token flow
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant API as Authentication API
+    participant Service as RefreshTokenService
+    participant DB as PostgreSQL
+    Client->>API: POST /auth/refresh (opaque token)
+    API->>Service: rotate(raw token)
+    Service->>Service: SHA-256 hash
+    Service->>DB: SELECT token FOR UPDATE
+    alt active and unexpired
+        Service->>DB: revoke old + insert replacement
+        Service-->>Client: new access + refresh tokens
+    else rotated token reused
+        Service->>DB: revoke active token family
+        Service-->>Client: 401 INVALID_REFRESH_TOKEN
+    else invalid, revoked, or expired
+        Service-->>Client: 401 INVALID_REFRESH_TOKEN
+    end
+```
 
 ## Checkout transaction
 
