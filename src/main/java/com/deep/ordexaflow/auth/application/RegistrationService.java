@@ -4,6 +4,10 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.deep.ordexaflow.auth.api.RegisterRequest;
 import com.deep.ordexaflow.auth.api.UserRegistrationResponse;
 import com.deep.ordexaflow.common.exception.DuplicateEmailException;
@@ -11,9 +15,6 @@ import com.deep.ordexaflow.users.domain.Role;
 import com.deep.ordexaflow.users.domain.User;
 import com.deep.ordexaflow.users.infrastructure.RoleRepository;
 import com.deep.ordexaflow.users.infrastructure.UserRepository;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RegistrationService {
