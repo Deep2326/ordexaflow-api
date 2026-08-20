@@ -66,8 +66,8 @@ Controllers remain thin. Application services enforce business rules and own tra
 ## Security architecture
 
 - Stateless access JWTs are short-lived and signed using a secret/key supplied outside source control.
-- Refresh tokens are opaque random values; only a cryptographic hash is stored in the database.
-- Refresh tokens are rotated on use and revoked on logout.
+- Planned refresh tokens are opaque random values; only a cryptographic hash will be stored in the database.
+- Planned refresh tokens will be rotated on use and revoked on logout.
 - The JWT filter authenticates access tokens before controller invocation.
 - URL rules provide coarse access control; `@PreAuthorize` protects sensitive application methods.
 - `/api/v1/auth/**`, public `GET /api/v1/products/**`, OpenAPI in non-production profiles, and liveness/readiness are permitted as explicitly configured.

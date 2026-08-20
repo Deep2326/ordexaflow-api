@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import com.deep.ordexaflow.common.exception.DuplicateEmailException;
+import com.deep.ordexaflow.common.exception.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,11 @@ public class GlobalExceptionHandler {
     ResponseEntity<ApiError> authentication(AuthenticationException exception, HttpServletRequest request) {
         return response(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "Invalid email or password",
                 request, List.of());
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    ResponseEntity<ApiError> resourceNotFound(ResourceNotFoundException exception, HttpServletRequest request) {
+        return response(HttpStatus.NOT_FOUND, "RESOURCE_NOT_FOUND", exception.getMessage(), request, List.of());
     }
 
     private ResponseEntity<ApiError> response(HttpStatus status, String code, String message,

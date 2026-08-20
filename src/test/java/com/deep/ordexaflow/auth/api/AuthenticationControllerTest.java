@@ -95,11 +95,13 @@ class AuthenticationControllerTest {
     }
 
     @Test
-    void redactsPasswordsFromRequestStringRepresentations() {
+    void redactsCredentialsAndTokensFromStringRepresentations() {
         var login = new LoginRequest("deep@example.com", "LoginSecret123!");
         var register = new RegisterRequest("Deep", "Patel", "deep@example.com", "RegisterSecret123!");
+        var response = new LoginResponse("secret.jwt.token", "Bearer", 900);
 
         assertThat(login.toString()).contains("[REDACTED]").doesNotContain("LoginSecret123!");
         assertThat(register.toString()).contains("[REDACTED]").doesNotContain("RegisterSecret123!");
+        assertThat(response.toString()).contains("[REDACTED]").doesNotContain("secret.jwt.token");
     }
 }
