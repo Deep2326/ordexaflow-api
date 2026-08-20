@@ -2,7 +2,7 @@
 
 OrdexaFlow is a production-oriented commerce and order-management backend built as a modular Spring Boot monolith. It is designed to demonstrate secure API design, transactional order processing, safe inventory updates, relational database design, automated testing, and production delivery practices.
 
-> Status: Phase 2 — identity and authentication in progress. Registration and JWT login are implemented.
+> Status: Phases 2–3 — registration, JWT login, current-user profiles, and initial RBAC are implemented.
 
 ## Problem
 
@@ -72,7 +72,9 @@ Implemented authentication endpoints:
 
 - `POST /api/v1/auth/register` creates a customer with `ROLE_USER`.
 - `POST /api/v1/auth/login` returns a signed Bearer access token valid for 15 minutes.
+- `GET /api/v1/users/me` returns the authenticated customer's database-backed profile.
 - All endpoints not explicitly public require `Authorization: Bearer <access-token>`.
+- `/api/v1/admin/**` requires `ROLE_ADMIN`; service methods also enforce sensitive role rules with `@PreAuthorize`.
 
 ## Design documents
 

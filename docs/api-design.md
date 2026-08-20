@@ -15,9 +15,9 @@
 | Method | Path | Access | Purpose |
 |---|---|---|---|
 | POST | `/auth/register` | Public | Register a customer |
-| POST | `/auth/login` | Public | Issue access and refresh tokens |
-| POST | `/auth/refresh` | Public with refresh token | Rotate refresh token and issue access token |
-| POST | `/auth/logout` | Authenticated | Revoke the presented refresh token |
+| POST | `/auth/login` | Public | Issue an access token |
+| POST | `/auth/refresh` | Public with refresh token | Planned: rotate refresh token and issue access token |
+| POST | `/auth/logout` | Authenticated | Planned: revoke the presented refresh token |
 | GET | `/users/me` | Customer/Admin | Current user profile |
 
 ## Public catalog
@@ -82,6 +82,19 @@ Register request:
 }
 ```
 
+Current-user response:
+
+```json
+{
+  "id": "b03c5d0e-a143-4e12-8812-f5647c1c93e3",
+  "firstName": "Avery",
+  "lastName": "Chen",
+  "email": "avery@example.com",
+  "roles": ["ROLE_USER"],
+  "createdAt": "2026-08-19T18:30:00Z"
+}
+```
+
 Product response:
 
 ```json
@@ -134,4 +147,3 @@ Error response:
 - `201` creation, `200` retrieval/update, and `204` deletion/logout without a body
 
 The implementation's generated OpenAPI document becomes the detailed source of truth; this file defines the intended resource model and endpoint surface.
-
