@@ -39,4 +39,5 @@ ordexaflow:
     jwt:
       issuer: ${JWT_ISSUER:http://localhost:8080}
       access-token-ttl: 15m
+      refresh-token-ttl: 30d
       secret: ${JWT_SECRET:local-development-only-change-this-32-byte-secret}

@@ -14,6 +14,8 @@ Seller accounts are outside Version 1.
 
 - A visitor can register with a unique, normalized email address and a strong password.
 - A registered user can log in, refresh a session, and log out.
+- Refresh tokens are opaque, stored only as hashes, rotated after every use, and revoked on logout.
+- Reuse of a rotated refresh token revokes the remaining session token family.
 - Passwords are stored only as adaptive one-way hashes.
 - A customer can read or modify only their own private resources.
 - Administrative operations require `ROLE_ADMIN`.
@@ -69,11 +71,12 @@ Seller accounts are outside Version 1.
 
 ### Version 1 (must have)
 
-Identity, JWT/RBAC, catalog, categories, inventory, cart, orders, validation, exception handling, PostgreSQL/Flyway, OpenAPI, tests, Docker, and CI.
+Identity, JWT/RBAC, refresh-token rotation/revocation, catalog, categories, inventory, cart, orders,
+validation, exception handling, PostgreSQL/Flyway, OpenAPI, tests, Docker, and CI.
 
 ### Version 2
 
-OAuth2 login, auditing enhancements, refresh-token rotation/reuse detection, advanced search, performance tuning, and expanded observability.
+OAuth2 login, auditing enhancements, advanced search, performance tuning, and expanded observability.
 
 ### Later
 
@@ -82,10 +85,10 @@ Redis, rate limiting, email, a real payment provider, Azure hosting, Key Vault, 
 ## Acceptance scenarios
 
 1. A visitor registers and logs in, then accesses an authenticated endpoint with an access token.
-2. A customer cannot call an admin endpoint or view another customer's order.
-3. An admin creates a category, product, and stock; a visitor finds it through catalog filters.
-4. A customer adds stock to a cart and checks out; one order is created, stock decreases, price is snapshotted, and the cart is emptied in one transaction.
-5. Checkout failure leaves the order, inventory, and cart unchanged.
-6. Two customers competing for the final unit cannot both complete checkout.
-7. Invalid status transitions return a stable conflict error.
-
+2. A user rotates a refresh token once; replaying the old token fails and revokes the remaining session.
+3. A customer cannot call an admin endpoint or view another customer's order.
+4. An admin creates a category, product, and stock; a visitor finds it through catalog filters.
+5. A customer adds stock to a cart and checks out; one order is created, stock decreases, price is snapshotted, and the cart is emptied in one transaction.
+6. Checkout failure leaves the order, inventory, and cart unchanged.
+7. Two customers competing for the final unit cannot both complete checkout.
+8. Invalid status transitions return a stable conflict error.

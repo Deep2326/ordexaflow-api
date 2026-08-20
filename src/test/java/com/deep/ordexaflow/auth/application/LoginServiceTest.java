@@ -23,6 +23,7 @@ class LoginServiceTest {
     private AuthenticationManager authenticationManager;
     private UserRepository userRepository;
     private JwtService jwtService;
+    private RefreshTokenService refreshTokenService;
     private LoginService loginService;
 
     @BeforeEach
@@ -30,7 +31,8 @@ class LoginServiceTest {
         authenticationManager = mock(AuthenticationManager.class);
         userRepository = mock(UserRepository.class);
         jwtService = mock(JwtService.class);
-        loginService = new LoginService(authenticationManager, userRepository, jwtService);
+        refreshTokenService = mock(RefreshTokenService.class);
+        loginService = new LoginService(authenticationManager, userRepository, jwtService, refreshTokenService);
     }
 
     @Test
@@ -38,6 +40,8 @@ class LoginServiceTest {
         User user = new User("Deep", "Patel", "deep@example.com", "password-hash", new Role("ROLE_USER"));
         when(userRepository.findByEmail("deep@example.com")).thenReturn(Optional.of(user));
         when(jwtService.issueAccessToken(user)).thenReturn(new JwtService.IssuedToken("signed-token", 900));
+        when(refreshTokenService.issue(user)).thenReturn(new RefreshTokenService.IssuedRefreshToken(
+                java.util.UUID.randomUUID(), "refresh-token", 2_592_000));
 
         var response = loginService.login(new LoginRequest("  Deep@Example.COM ", "StrongPassword123!"));
 
@@ -47,8 +51,11 @@ class LoginServiceTest {
         assertThat(authentication.getValue().getPrincipal()).isEqualTo("deep@example.com");
         assertThat(authentication.getValue().getCredentials()).isEqualTo("StrongPassword123!");
         assertThat(response.accessToken()).isEqualTo("signed-token");
+        assertThat(response.refreshToken()).isEqualTo("refresh-token");
         assertThat(response.tokenType()).isEqualTo("Bearer");
         assertThat(response.expiresIn()).isEqualTo(900);
+        assertThat(response.refreshExpiresIn()).isEqualTo(2_592_000);
+        verify(refreshTokenService).issue(user);
     }
 
     @Test

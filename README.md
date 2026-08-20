@@ -2,7 +2,8 @@
 
 OrdexaFlow is a production-oriented commerce and order-management backend built as a modular Spring Boot monolith. It is designed to demonstrate secure API design, transactional order processing, safe inventory updates, relational database design, automated testing, and production delivery practices.
 
-> Status: Phases 2–3 — registration, JWT login, current-user profiles, and initial RBAC are implemented.
+> Status: Phases 2–3 — registration, JWT login, rotating refresh tokens, logout/revocation,
+> current-user profiles, and initial RBAC are implemented.
 
 ## Problem
 
@@ -72,9 +73,14 @@ Implemented authentication endpoints:
 
 - `POST /api/v1/auth/register` creates a customer with `ROLE_USER`.
 - `POST /api/v1/auth/login` returns a signed Bearer access token valid for 15 minutes.
+- `POST /api/v1/auth/refresh` rotates a single-use opaque refresh token and returns a new token pair.
+- `POST /api/v1/auth/logout` revokes the supplied refresh token and returns `204 No Content`.
 - `GET /api/v1/users/me` returns the authenticated customer's database-backed profile.
 - All endpoints not explicitly public require `Authorization: Bearer <access-token>`.
 - `/api/v1/admin/**` requires `ROLE_ADMIN`; service methods also enforce sensitive role rules with `@PreAuthorize`.
+
+Refresh tokens are valid for 30 days by default. Only SHA-256 token hashes are stored in PostgreSQL.
+Reusing a token that has already been rotated revokes the remaining token family, limiting replay after theft.
 
 ## Design documents
 
