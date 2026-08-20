@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,8 +21,10 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtValidationException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -60,6 +63,21 @@ class CurrentUserControllerSecurityTest {
                 .andExpect(jsonPath("$.error").value("UNAUTHENTICATED"))
                 .andExpect(jsonPath("$.message")
                         .value("Authentication is required or the access token is invalid"));
+    }
+
+    @Test
+    void rejectsExpiredAccessTokenWithStructuredError() throws Exception {
+        var expirationError = new OAuth2Error("invalid_token", "The access token expired", null);
+        when(jwtDecoder.decode("expired-token")).thenThrow(new JwtValidationException(
+                "The access token expired", List.of(expirationError)));
+
+        mockMvc.perform(get("/api/v1/users/me")
+                        .header("Authorization", "Bearer expired-token"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.error").value("UNAUTHENTICATED"))
+                .andExpect(jsonPath("$.message")
+                        .value("Authentication is required or the access token is invalid"))
+                .andExpect(jsonPath("$.path").value("/api/v1/users/me"));
     }
 
     @Test
