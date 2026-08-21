@@ -3,6 +3,8 @@ package com.deep.ordexaflow.common.web;
 import java.time.Instant;
 import java.util.List;
 
+import com.deep.ordexaflow.cart.application.CartCurrencyMismatchException;
+import com.deep.ordexaflow.cart.application.InsufficientInventoryException;
 import com.deep.ordexaflow.common.exception.DuplicateEmailException;
 import com.deep.ordexaflow.common.exception.DuplicateResourceException;
 import com.deep.ordexaflow.common.exception.InvalidRequestException;
@@ -11,6 +13,8 @@ import com.deep.ordexaflow.auth.application.InvalidRefreshTokenException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.core.AuthenticationException;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateEmailException.class)
     ResponseEntity<ApiError> duplicateEmail(DuplicateEmailException exception, HttpServletRequest request) {
@@ -33,6 +38,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidRequestException.class)
     ResponseEntity<ApiError> invalidRequest(InvalidRequestException exception, HttpServletRequest request) {
         return response(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", exception.getMessage(), request, List.of());
+    }
+
+    @ExceptionHandler(InsufficientInventoryException.class)
+    ResponseEntity<ApiError> insufficientInventory(
+            InsufficientInventoryException exception, HttpServletRequest request) {
+        return response(HttpStatus.CONFLICT, "INSUFFICIENT_INVENTORY", exception.getMessage(), request, List.of());
+    }
+
+    @ExceptionHandler(CartCurrencyMismatchException.class)
+    ResponseEntity<ApiError> cartCurrencyMismatch(
+            CartCurrencyMismatchException exception, HttpServletRequest request) {
+        return response(HttpStatus.CONFLICT, "CART_CURRENCY_MISMATCH", exception.getMessage(), request, List.of());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

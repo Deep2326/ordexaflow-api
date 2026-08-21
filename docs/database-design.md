@@ -68,6 +68,9 @@ erDiagram
     CARTS {
         uuid id PK
         uuid user_id UK,FK
+        varchar currency
+        bigint version
+        timestamptz created_at
         timestamptz updated_at
     }
     CART_ITEMS {
@@ -75,6 +78,8 @@ erDiagram
         uuid cart_id FK
         uuid product_id FK
         integer quantity
+        timestamptz created_at
+        timestamptz updated_at
     }
     ORDERS {
         uuid id PK

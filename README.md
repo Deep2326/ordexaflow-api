@@ -2,8 +2,8 @@
 
 OrdexaFlow is a production-oriented commerce and order-management backend built as a modular Spring Boot monolith. It is designed to demonstrate secure API design, transactional order processing, safe inventory updates, relational database design, automated testing, and production delivery practices.
 
-> Status: Phases 2–4 — identity/security and the first production catalog slice are implemented,
-> including categories, products, inventory, filtering, pagination, and admin RBAC.
+> Status: Phases 2–5 — identity/security, catalog/inventory, and authenticated customer carts are
+> implemented with JWT ownership, validation, optimistic locking, and structured errors.
 
 ## Problem
 
@@ -89,6 +89,15 @@ Implemented catalog endpoints:
 - `GET /api/v1/products/{productId}` returns an active product with its current inventory.
 - `/api/v1/admin/categories/**` and `/api/v1/admin/products/**` provide role-protected management operations.
 - Product deletion is a soft discontinuation, and inventory uses optimistic locking to prevent lost updates.
+
+Implemented cart endpoints:
+
+- `GET /api/v1/cart` returns the authenticated customer's cart and server-calculated subtotal.
+- `POST /api/v1/cart/items` adds a product or increases its existing quantity.
+- `PUT /api/v1/cart/items/{itemId}` replaces an owned item's quantity.
+- `DELETE /api/v1/cart/items/{itemId}` removes an owned item.
+- `DELETE /api/v1/cart` clears the cart idempotently.
+- Cart operations validate active products, USD currency, and current inventory without reserving stock.
 
 ## Design documents
 
