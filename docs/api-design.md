@@ -42,6 +42,11 @@ repeat `sort=field,direction` to apply multiple sort orders.
 | DELETE | `/cart/items/{itemId}` | Customer | Remove an item |
 | DELETE | `/cart` | Customer | Clear the cart |
 
+Cart identity always comes from the access token; clients never submit a user ID. Adding a product already in
+the cart increases its quantity, while `PUT` replaces the quantity. Cart prices and totals are calculated from
+the current catalog. Cart operations validate current inventory for customer feedback but do not reserve or
+decrement stock; checkout performs the authoritative inventory check.
+
 ## Addresses and orders
 
 | Method | Path | Access | Purpose |
@@ -143,6 +148,32 @@ Product response:
   "availableQuantity": 8,
   "active": true,
   "category": { "id": "ca9d7780-d51f-4fc1-8b95-a7eec7c506ba", "name": "Laptops", "slug": "laptops" }
+}
+```
+
+Cart response:
+
+```json
+{
+  "id": "06182273-e996-4dfb-aa68-741dfd74aa32",
+  "items": [
+    {
+      "id": "de8cce56-0e31-473a-9dc3-b4eaf69e0943",
+      "productId": "f7fc17df-9128-44fd-91c0-cfa82c358312",
+      "sku": "LAPTOP-001",
+      "name": "Developer Laptop",
+      "unitPrice": 1299.00,
+      "currency": "USD",
+      "quantity": 2,
+      "lineTotal": 2598.00,
+      "availableQuantity": 8,
+      "available": true
+    }
+  ],
+  "totalItems": 2,
+  "subtotal": 2598.00,
+  "currency": "USD",
+  "updatedAt": "2026-08-20T22:00:00Z"
 }
 ```
 

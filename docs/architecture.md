@@ -63,6 +63,14 @@ sequenceDiagram
 
 Controllers remain thin. Application services enforce business rules and own transactions. Repositories handle persistence. JPA entities never cross the API boundary.
 
+## Cart boundary
+
+The cart is an aggregate owned by the authenticated customer. `CartService` derives the user ID from the JWT,
+loads products with their current inventory, and mutates cart items within a transaction. A unique database
+constraint enforces one cart per user and one line per product, while a cart version detects competing updates.
+Catalog price and availability are projected into response DTOs; adding to a cart never reserves or decrements
+inventory. Checkout revalidates stock and snapshots prices in the order transaction.
+
 ## Security architecture
 
 - Stateless access JWTs are short-lived and signed using a secret/key supplied outside source control.
